@@ -87,12 +87,12 @@ WSGI_APPLICATION = 'my_django_project_1.wsgi.application'
 DATABASES = {
     'default': {
         'NAME': 'my_app_1',
-        'ENGINE': 'mysql.connector.django',
-        'USER': 'user',
-        'PASSWORD': 'userPass1',
-        'OPTIONS': {
-          'autocommit': True,
-        },
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'USER': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'PASSWORD': 'p1LotkA',
+        'AUTOCOMMIT': True,
     }
 }
 
