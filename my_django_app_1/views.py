@@ -8,6 +8,6 @@ def index(request):
     # return HttpResponse("HELLO WORLD.")
     return render(request, "index.html")
 
-
+#test
 
 
