@@ -16,6 +16,7 @@ class User(AbstractUser):
 #     username = models.CharField(max_length=100)
 
 
+
 class Customer(models.Model):
     customer_name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
