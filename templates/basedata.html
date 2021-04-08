@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+
+{% block menu %}
+      <a class="me-3 py-2 text-dark text-decoration-none" href="#">ФИО</a>
+      <a class="me-3 py-2 text-dark text-decoration-none" href="#">Профиль</a>
+      <a class="me-3 py-2 text-dark text-decoration-none" href="#">Чтото еще</a>
+      <a class="py-2 text-dark text-decoration-none" href="/myapp">Выйти</a>
+{% endblock %}
+
+{% block select %}
+      <div class = "col-2 offset-2">
+        <span class="input-group-text" id="inputGroup-sizing-sm">Контрагент</span>
+      </div>
+      <div class = "col-4 offset-0">
+            <select class="form-select" aria-label="Default select example">
+
+              <option selected>Open this select menu</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+          </select>
+      </div>
+{% endblock %}
+
+{% block content %}
+        <div class = "col-10 offset-2">
+            <ul class="nav justify-content-left">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/myapp/main">Основные данные</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/myapp/doc">Документы и справки</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/myapp/update">Предоставить данные</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/myapp/history">История</a>
+              </li>
+            </ul>
+        </div>
+{% endblock %}
+

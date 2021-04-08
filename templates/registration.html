@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    <div class = "col-6 offset-2">
+      <h1>Введите учетные данные</h1>
+    </div>
+    <div class = "col-4 offset-2">
+      <form>
+        <div class="mb-4">
+          <label for="phone" class="form-label">Номер телефона (10 цифр) </label>
+          <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
+          <div id="emailHelp" class="form-text">Мы не передаем Ваш номер телефона третьим лицам.</div>
+        </div>
+        <div class="mb-4">
+          <label for="exampleInputPassword1" class="form-label">Пароль</label>
+          <input type="password" class="form-control" id="exampleInputPassword1">
+        </div>
+        <div class="mb-4">
+          <input type="submit" name = "enter" value="Войти" class="mt-2 btn btn-primary">
+          <a href="/myapp/main">Войти</a>
+        </div>
+      </form>
+    </div>
+    <div class = "col-6 offset-2">
+      <h4><a href="/myapp/sendpass">Нет пароля или не помние. Нажмите сюда</a></h4>
+    </div>
+{% endblock %}

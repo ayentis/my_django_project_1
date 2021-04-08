@@ -1,8 +1,22 @@
-  body {
+body {
     color: purple;
-    background-color: #d8da3d }
+    background-color: #d8da3d}
+.navbar{ background:#F97300;}
+h2   {
+    font-size:24px;
+    color:green;
+    align: center;
+    }
 h1 {
-    color:red;
-    text-align: center
+    color:green;
+    text-align: right
     }
 img{width:350px;}
+
+input[type="tel"].w-2,
+select.w-2{
+width: 16.66666667%;
+}
+
+
+

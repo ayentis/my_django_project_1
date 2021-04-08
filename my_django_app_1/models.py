@@ -1,29 +1,73 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models import Q
+
+
+def user_login_valid(user_login):
+    from re import compile
+
+    pattern_email = compile('(^|\s)[-a-z0-9_.]+@([-a-z0-9]+\.)+[a-z]{2,6}(\s|$)')
+    pattern_phone = compile(r'\d{10}$')
+
+    if pattern_email.match(user_login):
+        return True, 'email'
+    elif pattern_phone.match(user_login):
+        return True, 'phone'
+    else:
+        return False, ''
 
 
 class User(AbstractUser):
-    pass
-    # username = models.CharField(max_length=12)
-    # pass_data = models.DateTimeField(auto_now_add=True)
 
-# class User(models.Model):
-#
-#     id = models.IntegerField(primary_key=True, unique=True, null=False, blank=False)
-#     password = models.CharField(max_length=20,)
-#     pass_data = models.DateTimeField(auto_now_add=True)
-#     active = models.BooleanField(default=False)
-#     username = models.CharField(max_length=100)
+    @staticmethod
+    def exist_by_login(user_login):
+        return User.objects.filter(Q(username=user_login) | Q(email=user_login)).exists()
 
+    @staticmethod
+    def create_by_phone(user_login):
+        return User.objects.get_or_create(username=user_login, defaults={'is_active': False})
 
+    @staticmethod
+    def update_by_login(user_login, new_value):
+        return User.objects.filter(Q(username=user_login) | Q(email=user_login)).update(**new_value)
+
+    @staticmethod
+    def get_by_login(user_login):
+        return User.objects.filter(Q(username=user_login) | Q(email=user_login))
+
+    pass_data = models.DateTimeField(auto_now_add=True)
+    id_external = models.CharField(max_length=36, default='00000000000000000000000000000000022')
+    auto_update = models.BooleanField(default=True)
 
 class Customer(models.Model):
+
+    @staticmethod
+    def update_by_id(local_id, new_value):
+        return Customer.objects.filter(id=local_id).update(**new_value)
+
+    @staticmethod
+    def exist_by_id(local_id):
+        return Customer.objects.filter(id=local_id).exists()
+
+    @staticmethod
+    def create(local_values):
+        return Customer.objects.get_or_create(**local_values)
+
+    @staticmethod
+    def get_by_id(local_id):
+        return Customer.objects.filter(id=local_id)
+
     customer_name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     id = models.IntegerField(primary_key=True, unique=True, null=False, blank=False)
 
 
 class RequestHistory(models.Model):
+
+    @staticmethod
+    def create(local_values):
+        return RequestHistory.objects.create(**local_values)
+
     customerID = models.ForeignKey(Customer, on_delete=models.PROTECT)
     event_data = models.DateTimeField(auto_now_add=True)
     request_name = models.CharField(max_length=100)
@@ -31,7 +75,16 @@ class RequestHistory(models.Model):
 
 
 class UpdateHistory(models.Model):
+
+    @staticmethod
+    def create(local_values):
+        return UpdateHistory.objects.create(**local_values)
+
     customerID = models.ForeignKey(Customer, on_delete=models.PROTECT)
     event_data = models.DateTimeField(auto_now_add=True)
     update_data = models.JSONField()
     result = models.CharField(max_length=200)
+
+
+
+

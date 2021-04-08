@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,5 +7,14 @@
 </head>
 <body>
     <h1>Welcome to Django!</h1>
+    <h2><a href="/myapp/reg">on registration page</a></h2>
+    {% for str_rh in rh %}
+    <div>
+        <h2>{{ str_rh.request_name }}</h2>
+        <p>{{ str_rh.request_name }}</p>
+        <p>{{ str_rh.event_data|date:'d.m.Y H:i:s' }}</p>
+    </div>
+    {% endfor %}
+
 </body>
 </html>
