@@ -36,7 +36,6 @@ def get_data_from_1c(phone):
 #
 
 
-
 def update_database(phone_number):
 
     obj, created = User.create_by_phone(phone_number)
@@ -50,6 +49,7 @@ def update_database(phone_number):
             'main_data': current_customer['MainData'],
             'add_data': current_customer['AddData']
         })
+
 
 def maindata(request):
 
