@@ -14,11 +14,10 @@
       </div>
       <div class = "col-4 offset-0">
             <select class="form-select" aria-label="Default select example">
-
-              <option selected>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+                <option selected>Open this select menu</option>
+                {% for customer in customers_list %}
+                <option value = {{ customer.ID }}>{{ customer.customer_name }}</option>
+                {% endfor %}
           </select>
       </div>
 {% endblock %}

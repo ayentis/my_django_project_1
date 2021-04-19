@@ -59,8 +59,9 @@ class Customer(models.Model):
 
     customer_name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    id = models.IntegerField(primary_key=True, unique=True, null=False, blank=False)
-
+    id = models.CharField(max_length=38, primary_key=True, unique=True, null=False, blank=False)
+    main_data = models.JSONField(null=True)
+    add_data = models.JSONField(null=True)
 
 class RequestHistory(models.Model):
 
@@ -86,5 +87,14 @@ class UpdateHistory(models.Model):
     result = models.CharField(max_length=200)
 
 
+class LocalSettings(models.Model):
+    RECORD_TYPES_LIST = (
+        (None, 'Select record type'),
+        ('1c_server', '1c server'),
+        ('1c_path', '1c path'),
+        ('1c_user', '1c user'),
+        ('1c_password', '1c user password'),
+    )
 
-
+    record_type = models.CharField(max_length=20, choices=RECORD_TYPES_LIST, unique=True)
+    value = models.CharField(max_length=250)

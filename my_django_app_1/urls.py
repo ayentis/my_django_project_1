@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .views import index, registration, sendpass, maindata, docdata, updatedata, historydata
+from .views import  registration, sendpass, maindata, docdata, updatedata, historydata
 
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('index/', index),
+    # path('index/', index),
     path('sendpass/', sendpass),
     path('main/', maindata),
     path('doc/', docdata),

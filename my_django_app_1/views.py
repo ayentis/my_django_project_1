@@ -3,56 +3,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import User, Customer, UpdateHistory, RequestHistory
-
-import json
-
-def index(request):
-
-    # obj, created = User.get_or_create_user_by_login('0665858126')
-    if not User.exist_by_login('0665858127'):
-        obj, created = User.create_by_phone('0665858127')
-
-        if created:
-            obj = User.update_by_login('0665858127', {'email':'ay@gmail.com'})
-    else:
-        obj = User.get_by_login('ay@gmail.com')
-
-    customer_id = '123'
-
-    for c_obj in obj:
-        if not Customer.exist_by_id(customer_id):
-            Customer.create({'customer_name': 'vasya', 'id': customer_id, 'user': c_obj})
-        else:
-            Customer.update_by_id(customer_id, {'customer_name': 'vasya123'})
-
-    cust_obj = Customer.get_by_id(customer_id)
-
-    for c_cust_obj in cust_obj:
-        rez1 = RequestHistory.create({'customerID': c_cust_obj, 'request_name': 'r1'})
-        rez2 = UpdateHistory.create({'customerID': c_cust_obj, 'update_data': json.dumps({'4': 5, '6': 7})})
-
-    customer_id = '1234'
-    cust_obj = Customer.get_by_id(customer_id)
-
-    for c_obj in obj:
-        if not Customer.exist_by_id(customer_id):
-            Customer.create({'customer_name': 'vasya', 'id': customer_id, 'user': c_obj})
-        else:
-            Customer.update_by_id(customer_id, {'customer_name': 'vasya1234'})
-
-    for c_cust_obj in cust_obj:
-        rez3 = RequestHistory.create({'customerID':c_cust_obj, 'request_name':'r2'})
-        rez4 = UpdateHistory.create({'customerID': c_cust_obj, 'update_data': json.dumps({'8': 9, '10': 11})})
-
-    # return HttpResponse(obj)
-
-    rh = RequestHistory.objects.all()
-    context = {'rh': rh}
-
-    return render(request, "index.html", context)
+import requests
 
 
 def registration(request):
+
     return render(request, "registration.html", {})
 
 
@@ -60,8 +15,52 @@ def sendpass(request):
     return render(request, "sendpass.html", {})
 
 
+def get_data_from_1c(phone):
+
+    body_dict = {
+        "method": "ExecuteExternalProcessing",
+        "ProcessingName": "GetLandOwnerInfo",
+        "ProcedureName": "GetLandOwnerInfo",
+        "PhoneNumber": phone
+    }
+
+    response = requests.post('http://1cweb.fusion.mk.ua/fusion/hs/PutData'
+                             , json=body_dict
+                             , auth=('exchangetlc', 'passexchange')
+                             , headers={'Content-type': 'application/json'}
+    )
+    return response.json()
+
+
+# def set_customers(customers_data):
+#
+
+
+
+def update_database(phone_number):
+
+    obj, created = User.create_by_phone(phone_number)
+    customers_data = get_data_from_1c(phone_number)
+
+    for current_customer in customers_data:
+        Customer.create({
+            'customer_name': current_customer['Name'],
+            'id': current_customer['ID'],
+            'user': obj,
+            'main_data': current_customer['MainData'],
+            'add_data': current_customer['AddData']
+        })
+
 def maindata(request):
-    return render(request, "basedatamain.html", {})
+
+    content = {}
+    if request.method == 'POST':
+        update_database(request.POST['phone'])
+        content['customers_list'] = Customer.objects.filter(user__username=request.POST['phone'])
+    else:
+        print('hello Other ' + request.method, request)
+
+    return render(request, "basedatamain.html", content)
 
 
 def docdata(request):
@@ -74,3 +73,7 @@ def updatedata(request):
 
 def historydata(request):
     return render(request, "basedatahistory.html", {})
+
+
+def enter(request):
+    return render(request, "basedatamain.html", {})
