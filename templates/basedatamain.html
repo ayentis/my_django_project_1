@@ -3,25 +3,70 @@
 {% block title %}Основные данные{% endblock %}
 
 {% block content1 %}
+
+{% if main_data %}
     <div class = "col-6 offset-2">
       <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Атрибут</th>
-            <th scope="col">Значение</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Имя</th>
-            <td>Mark</td>
-          </tr>
-          <tr>
-            <th scope="row">Фамилия</th>
-            <td>Jacob</td>
-          </tr>
-        </tbody>
+         {% for str_elem in main_data %}
+
+            {% if forloop.first %}
+              <thead>
+                <tr>
+                    {% for elem in str_elem %}
+                        <th scope="col">{{ elem }}</th>
+                    {% endfor %}
+                </tr>
+              </thead>
+            {% else%}
+              <tbody>
+                <tr>
+                    {% for elem in str_elem %}
+                        {% if forloop.first %}
+                            <th scope="row"> {{ elem }}</th>
+                        {% else %}
+                            <td> {{ elem }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+              </tbody>
+            {% endif %}
+         {% endfor %}
       </table>
+
+      {% for add_data_key, add_data_value in add_data.items %}
+        <div>
+            <b>{{ add_data_key }}</b>
+            {% for add_data_str in add_data_value %}
+                <table class="table">
+                    {% if forloop.first %}
+                        <thead>
+                            <tr>
+                                {% for elem in add_data_str %}
+                                    <th scope="col">{{ elem }}</th>
+                                {% endfor%}
+                            </tr>
+                        </thead>
+                    {% else %}
+                        <tbody>
+                            <tr>
+                                {% for elem in add_data_str %}
+                                    {% if forloop.first %}
+<!--                                        <th scope="row">{{ elem }}</th>-->
+                                        <td>{{ elem }}</td>
+                                    {% else %}
+                                        <td>{{ elem }}</td>
+                                    {% endif %}
+                                {% endfor%}
+                            </tr>
+                        </tbody>
+                    {% endif %}
+                </table>
+            {% endfor %}
+        </div>
+
+    {% endfor%}
     </div>
+
+{% endif %}
 {% endblock %}
 

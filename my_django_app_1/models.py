@@ -58,7 +58,7 @@ class Customer(models.Model):
         return Customer.objects.filter(id=local_id)
 
     customer_name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='customers')
     id = models.CharField(max_length=38, primary_key=True, unique=True, null=False, blank=False)
     main_data = models.JSONField(null=True)
     add_data = models.JSONField(null=True)
@@ -90,8 +90,8 @@ class UpdateHistory(models.Model):
 class LocalSettings(models.Model):
     RECORD_TYPES_LIST = (
         (None, 'Select record type'),
-        ('1c_server', '1c server'),
         ('1c_path', '1c path'),
+        ('1c_method', '1c method'),
         ('1c_user', '1c user'),
         ('1c_password', '1c user password'),
     )

@@ -7,23 +7,24 @@
       <h1>Введите учетные данные</h1>
     </div>
     <div class = "col-4 offset-2">
-      <form action="main/" method="post">
+      <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
         <div class="mb-4">
           <label for="phone" class="form-label">Номер телефона (10 цифр) </label>
-          <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
+          <input type="tel" class="form-control" id="phone" name="username" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
           <div id="emailHelp" class="form-text">Мы не передаем Ваш номер телефона третьим лицам.</div>
         </div>
         <div class="mb-4">
           <label for="exampleInputPassword1" class="form-label">Пароль</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
+          <input type="password" name="password" class="form-control" id="exampleInputPassword1">
         </div>
         <div class="mb-4">
-          <input type="submit" name = "enter" value="Войти" class="mt-2 btn btn-primary">
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type="submit" name = "login" value="Войти" class="mt-2 btn btn-primary">
         </div>
       </form>
     </div>
     <div class = "col-6 offset-2">
-      <h4><a href="/myapp/sendpass">Нет пароля или не помните. Нажмите сюда</a></h4>
+      <h4><a href="/send_pass">Нет пароля или не помните. Нажмите сюда</a></h4>
     </div>
 {% endblock %}

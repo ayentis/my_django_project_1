@@ -3,9 +3,36 @@
 {% block title %}Redirect page{% endblock %}
 
 {% block content %}
-<div class = "col-6 offset-2">
-    <h2>Пароль выслан в СМС на номер телефона</h2>
 
-    <a href="/myapp/">на страницу регистрации</a>
+<div class = "col-6 offset-2">
+
+
+    {% if PasswordSent %}
+        <h2>Пароль выслан в СМС на номер телефона {{ login }}. Не передавайте его третьим лицам</h2>
+        {% if password %}
+            <h2>Пароль {{ password }}</h2>
+        {% endif %}
+    {% else %}
+        <form action="/send_pass/" method="post">
+            {% csrf_token %}
+             <h2>Введите номер телефона, который был указан как финансовый при регистрации договора.
+                 На этот номер будет выслан пароль в СМС сообщении</h2>
+            <div class="mb-4">
+              <label for="phone" class="form-label">Введите номер телефона  (10 цифр) </label>
+              <input type="tel" class="form-control" id="phone" name="username" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
+              <div id="emailHelp" class="form-text">Мы не передаем Ваш номер телефона третьим лицам.</div>
+            </div>
+            <div class="mb-4">
+                <input type="submit" name = "Send" value="Получить" class="mt-2 btn btn-primary">
+            </div>
+
+            {% if UserDoesNotExist %}
+                <h2>Логин {{ login }} не существует </h2>
+            {% endif %}
+
+        </form>
+    {% endif %}
+    <br>
+    <a href="/">на страницу регистрации</a>
 </div>
 {% endblock %}

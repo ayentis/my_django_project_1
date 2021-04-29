@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ SECRET_KEY = 'w2psz!ylys7z_ro*=t9&!^mx6!9u#fl9u1#95^rirbl5zlm%th'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -74,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'my_django_project_1.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -97,7 +94,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL="my_django_app_1.User"
+AUTH_USER_MODEL = "my_django_app_1.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -116,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -142,7 +138,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -166,3 +161,6 @@ LOGGING = {
         },
     },
 }
+
+LOGIN_URL = '/login/'
+# LOGIN_REDIRECT_URL = '/update_database/'
