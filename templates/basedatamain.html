@@ -8,7 +8,6 @@
     <div class = "col-6 offset-2">
       <table class="table">
          {% for str_elem in main_data %}
-
             {% if forloop.first %}
               <thead>
                 <tr>
@@ -17,12 +16,12 @@
                     {% endfor %}
                 </tr>
               </thead>
-            {% else%}
+            {% else %}
               <tbody>
                 <tr>
                     {% for elem in str_elem %}
                         {% if forloop.first %}
-                            <th scope="row"> {{ elem }}</th>
+                            <th scope="row">{{ elem }}</th>
                         {% else %}
                             <td> {{ elem }}</td>
                         {% endif %}

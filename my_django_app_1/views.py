@@ -3,8 +3,9 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import User, Customer, LocalSettings, UpdateHistory, RequestHistory
+from .forms import AddUserIndo
 import requests
 
 
@@ -24,6 +25,11 @@ def numeric_password_generator(pass_len):
     return password
 
 
+def send_SMS(phone_number, text):
+
+    return False
+
+
 def send_pass(request):
 
     content = {"UserDoesNotExist": False,
@@ -36,7 +42,10 @@ def send_pass(request):
 
             import datetime
 
-            content['password'] = numeric_password_generator(6)
+            password = numeric_password_generator(6)
+            if not send_SMS(content['login'], f'Personal landowner access {password}'):
+                content['password'] = password
+
             content["UserDoesNotExist"] = False
             content["PasswordSent"] = True
 
@@ -76,10 +85,6 @@ def get_data_from_1c(phone, ProcedureName = ''):
         return response.json()
 
 
-# def set_customers(customers_data):
-#
-
-
 def update_database_by_phone(phone_number):
 
     obj, created = User.create_by_phone(phone_number)
@@ -88,7 +93,8 @@ def update_database_by_phone(phone_number):
     for current_customer in customers_data:
         params = {
             'main_data': current_customer['MainData'],
-            'add_data': current_customer['AddData']
+            'add_data': current_customer['AddData'],
+            'documents_list': current_customer['DocumentsList'],
         }
         if Customer.exist_by_id(current_customer['ID']):
             Customer.update_by_id(current_customer['ID'], params)
@@ -112,6 +118,7 @@ def update_database(request):
     # update_database_by_phone(request.user.username)
     return request.redirect('/')
 
+
 @login_required
 def maindata(request):
 
@@ -122,13 +129,19 @@ def maindata(request):
 
     if customer_id := request.GET.get('customer'):
         content['main_data'] = request.user.customers.get(id=customer_id).main_data
-        content['add_data'] =  request.user.customers.get(id=customer_id).add_data
+        content['add_data'] = request.user.customers.get(id=customer_id).add_data
     return render(request, "basedatamain.html", content)
 
 
 @login_required
 def docdata(request):
-    return render(request, "basedatadoc.html", set_content(request))
+
+    content = set_content(request)
+    content['doc_data'] = []
+    if customer_id := request.GET.get('customer'):
+        content['doc_data'] = request.user.customers.get(id=customer_id).documents_list
+
+    return render(request, "basedatadoc.html", content)
 
 
 @login_required
@@ -143,3 +156,23 @@ def historydata(request):
 
 def enter(request):
     return render(request, "basedatamain.html", {})
+
+
+def update_profile(request):
+    if request.method == "POST":
+        form = AddUserIndo(request.POST)
+        if form.is_valid():
+            user = request.user
+            user.email = form.data['email']
+            user.first_name = form.data['first_name']
+            user.last_name = form.data['last_name']
+
+            user.save()
+
+            return redirect('/')
+    else:
+        form = AddUserIndo({'first_name':request.user.first_name,
+                            'last_name':request.user.last_name,
+                            'email': request.user.email
+                            })
+    return render(request, "current_profile.html", {'form':form})

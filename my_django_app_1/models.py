@@ -62,6 +62,7 @@ class Customer(models.Model):
     id = models.CharField(max_length=38, primary_key=True, unique=True, null=False, blank=False)
     main_data = models.JSONField(null=True)
     add_data = models.JSONField(null=True)
+    documents_list = models.JSONField(null=True)
 
 class RequestHistory(models.Model):
 

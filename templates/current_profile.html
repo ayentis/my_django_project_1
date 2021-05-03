@@ -1,0 +1,27 @@
+{% extends "base_registred.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+
+ <div class = "col-8 offset-2">
+    <form action="" method="post">
+        {% csrf_token %}
+
+        {% for f in form %}
+            <div class="form-group row">
+                <label for="{{ f.id_for_label }}" class="col-md-2 col-form-label">{{ f.label }}</label>
+                <div class="col-md-8">
+                    {{ f }}
+                </div>
+            </div>
+            <div class="form-error">{{ f.errors }}</div>
+        {% endfor %}
+        <br>
+        <div class="row">
+            <input type="submit" value="Сохранить" class="col-sm-2  btn btn-primary">
+            <a class="col-md-4 offset-2" href="/">на главную</a>
+        </div>
+    </form>
+ </div>
+{% endblock %}

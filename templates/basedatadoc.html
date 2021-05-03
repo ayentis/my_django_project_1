@@ -6,8 +6,9 @@
 {% block content1 %}
     <div class = "col-2 offset-2">
       <div class="d-grid gap-2">
-        <button class="btn btn-primary" type="button" >Справка</button>
-        <button class="btn btn-primary" type="button">Договор</button>
+          {% for str_elem in doc_data %}
+            <button class="btn btn-primary" type="button" >{{ str_elem.1 }}</button>
+          {% endfor %}
       </div>
     </div>
 {% endblock %}

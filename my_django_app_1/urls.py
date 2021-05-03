@@ -9,7 +9,8 @@ urlpatterns = [
     path('doc/', v.docdata),
     path('update/', v.updatedata),
     path('history/', v.historydata),
-    path('update_database/', v.update_database)
+    path('update_database/', v.update_database),
+    path('current_profile/', v.update_profile)
     # path('login/', registration),
 
 
