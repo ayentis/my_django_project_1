@@ -4,8 +4,12 @@
 {% block menu %}
 
     {% if user.username %}
-          <a class="me-3 py-2 text-dark text-decoration-none" href="#">{{user.username}}</a>
-          <a class="me-3 py-2 text-dark text-decoration-none" href="/current_profile">Профиль</a>
-          <a class="py-2 text-dark text-decoration-none" href="/logout">Выйти</a>
+        <a class="me-3 py-2 text-dark text-decoration-none" href="#">{{user.username}}</a>
+        {% if customer_selected %}
+            <a class="me-3 py-2 text-dark text-decoration-none" href="/current_profile/?customer={{ customer_selected.id }}">Профиль</a>
+        {% else %}
+            <a class="me-3 py-2 text-dark text-decoration-none" href="/current_profile">Профиль</a>
+        {% endif %}
+        <a class="py-2 text-dark text-decoration-none" href="/logout">Выйти</a>
     {% endif %}
 {% endblock %}

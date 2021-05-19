@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Q
+from django.utils import timezone
 
 
 def user_login_valid(user_login):
@@ -38,6 +39,8 @@ class User(AbstractUser):
     pass_data = models.DateTimeField(auto_now_add=True)
     id_external = models.CharField(max_length=36, default='00000000000000000000000000000000022')
     auto_update = models.BooleanField(default=True)
+    last_SMS_datetime = models.DateTimeField(default=timezone.now, auto_now_add=False)
+
 
 class Customer(models.Model):
 
@@ -63,6 +66,7 @@ class Customer(models.Model):
     main_data = models.JSONField(null=True)
     add_data = models.JSONField(null=True)
     documents_list = models.JSONField(null=True)
+
 
 class RequestHistory(models.Model):
 

@@ -20,7 +20,11 @@
         <br>
         <div class="row">
             <input type="submit" value="Сохранить" class="col-sm-2  btn btn-primary">
-            <a class="col-md-4 offset-2" href="/">на главную</a>
+            {% if customer_selected %}
+                <a class="col-md-4 offset-2" href="/?customer={{ customer_selected.id }}">на главную</a>
+            {% else %}
+                 <a class="col-md-4 offset-2" href="/">на главную</a>
+            {% endif %}
         </div>
     </form>
  </div>

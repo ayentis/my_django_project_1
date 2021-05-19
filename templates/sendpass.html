@@ -8,10 +8,16 @@
 
 
     {% if PasswordSent %}
-        <h2>Пароль выслан в СМС на номер телефона {{ login }}. Не передавайте его третьим лицам</h2>
+        {% if is_error %}
+            <h2>При передаче СМС возникла ошибка</h2>
+            <h2>{{ description }}</h2>
+        {% else %}
+            <h2>Пароль выслан в СМС на номер телефона {{ login }}. Не передавайте его третьим лицам</h2>
+        {% endif %}
         {% if password %}
             <h2>Пароль {{ password }}</h2>
         {% endif %}
+
     {% else %}
         <form action="/send_pass/" method="post">
             {% csrf_token %}

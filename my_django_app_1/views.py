@@ -4,10 +4,12 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect
+from numpy.linalg import cond
+
 from .models import User, Customer, LocalSettings, UpdateHistory, RequestHistory
 from .forms import AddUserIndo
 import requests
-
+from django.utils import timezone
 
 def registration(request):
 
@@ -25,32 +27,72 @@ def numeric_password_generator(pass_len):
     return password
 
 
-def send_SMS(phone_number, text):
+def send_SMS_letsads(phone_number, text):
+    import xmltodict
+    send_sms_data = '<?xml version="1.0" encoding="UTF-8"?>' \
+                    '<request>' \
+                    '<auth>' \
+                    '<login>380503944202</login>' \
+                    '<password>689282</password>' \
+                    '</auth>' \
+                    '     <message>' \
+                    '     <from>INAGRO</from>' \
+                    '     <text>{}</text>' \
+                    '     <recipient>{}</recipient>' \
+                    '     </message>' \
+                    '</request>'
 
-    return False
+    answer = requests.post("https://letsads.com/api", data=send_sms_data.format(text, '38' + phone_number))
+
+    return xmltodict.parse(answer.text).get('response')
+
+
+def send_SMS(phone_number, text, last_SMS_datetime):
+    import datetime
+    result = {'is_error': False,
+              'description': ''}
+
+    required_min_diff = 3600  # 1 hour
+
+    if int((timezone.now() - last_SMS_datetime).total_seconds())< required_min_diff:
+        result['description'] = 'SMS has been sent to you within 24 hours'
+        result['is_error'] = True
+    else:
+        sms_sender_result = send_SMS_letsads(phone_number, text)
+
+        if sms_sender_result.get('name') == 'Error':
+            result['description'] = sms_sender_result.get('description')
+            result['is_error'] = True
+
+    return result
 
 
 def send_pass(request):
 
     content = {"UserDoesNotExist": False,
-               'PasswordSent': False}
+               'PasswordSent': False,
+               }
 
     if request.method == 'POST':
         content['login'] = request.POST['username']
         customers_data = get_data_from_1c(content['login'], 'LoginValid')
         if (customers_data):
-
             import datetime
 
-            password = numeric_password_generator(6)
-            if not send_SMS(content['login'], f'Personal landowner access {password}'):
-                content['password'] = password
+            obj, created = User.objects.update_or_create(username=content['login'])
 
-            content["UserDoesNotExist"] = False
+            password = numeric_password_generator(6)
+            rez_sms_sender = send_SMS(content['login'], f'Personal landowner access {password}', obj.last_SMS_datetime)
+            content.update(rez_sms_sender)
             content["PasswordSent"] = True
 
-            obj, created = User.objects.update_or_create(username=content['login'])
-            obj.set_password(content['password'])
+            # for test
+            content['password'] = password
+
+            if not content['is_error']:
+                obj.last_SMS_datetime = timezone.now()
+
+            obj.set_password(password)
             obj.is_active = True
             obj.pass_data = datetime.datetime.now()
 
@@ -159,6 +201,9 @@ def enter(request):
 
 
 def update_profile(request):
+
+    content = set_content(request)
+
     if request.method == "POST":
         form = AddUserIndo(request.POST)
         if form.is_valid():
@@ -168,11 +213,17 @@ def update_profile(request):
             user.last_name = form.data['last_name']
 
             user.save()
-
-            return redirect('/')
+            url = '/'
+            if customer_id := content.get('customer_selected'):
+                url += '?customer='+customer_id.id
+            return redirect(url)
     else:
         form = AddUserIndo({'first_name':request.user.first_name,
                             'last_name':request.user.last_name,
                             'email': request.user.email
                             })
-    return render(request, "current_profile.html", {'form':form})
+
+        template_name = "current_profile.html"
+        content['form'] = form
+
+    return render(request, template_name, content)
