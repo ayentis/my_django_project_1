@@ -4,14 +4,14 @@
 
 {% block content %}
 
- <div class = "col-8 offset-2">
+ <div class = "col-12 fs-2">
     <form action="" method="post">
         {% csrf_token %}
 
         {% for f in form %}
-            <div class="form-group row">
-                <label for="{{ f.id_for_label }}" class="col-md-2 col-form-label">{{ f.label }}</label>
-                <div class="col-md-8">
+            <div class="form-group row py-3">
+                <label for="{{ f.id_for_label }}" class="col-md-3">{{ f.label }}</label>
+                <div class="col-md-9">
                     {{ f }}
                 </div>
             </div>
@@ -19,7 +19,7 @@
         {% endfor %}
         <br>
         <div class="row">
-            <input type="submit" value="Сохранить" class="col-sm-2  btn btn-primary">
+            <input type="submit" value="Сохранить" class="col-sm-4  btn fs-2 btn-primary">
             {% if customer_selected %}
                 <a class="col-md-4 offset-2" href="/?customer={{ customer_selected.id }}">на главную</a>
             {% else %}

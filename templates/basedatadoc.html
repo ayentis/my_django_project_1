@@ -4,10 +4,10 @@
 
 
 {% block content1 %}
-    <div class = "col-2 offset-2">
+    <div class = "col-12">
       <div class="d-grid gap-2">
           {% for str_elem in doc_data %}
-            <button class="btn btn-primary" type="button" >{{ str_elem.1 }}</button>
+            <button class="btn btn-primary fs-2 py-3 my-3" type="button" >{{ str_elem.1 }}</button>
           {% endfor %}
       </div>
     </div>

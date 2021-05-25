@@ -2,13 +2,13 @@
 
 
 {% block select %}
-      <form class="row g-3 align-items-center offset-2">
-          <div class="col-auto">
-            <label class="col-form-label">Контрагент</label>
-<!--            <span class="input-group-text" id="inputGroup-sizing-sm"></span>-->
-          </div>
-          <div class="col-4">
-            <select name="customer" class="form-select" aria-label="Default select example">
+      <form class="row g-3 align-items-center offset-0">
+<!--          <div class="col-auto">-->
+<!--            <label class="col-form-label fs-1">Контрагент</label>-->
+<!--&lt;!&ndash;            <span class="input-group-text" id="inputGroup-sizing-sm"></span>&ndash;&gt;-->
+<!--          </div>-->
+          <div class="col-10">
+            <select name="customer" class="form-select fs-2" aria-label="Default select example">
                 <option value="">Выберите контрагента</option>
                     {% for customer in customers_list %}
                     {% if customer.id == customer_selected.id %}
@@ -19,37 +19,37 @@
                 {% endfor %}
             </select>
           </div>
-          <div class="col-auto">
-            <input class="input-group-text" type="submit" value="Вывести">
+          <div class="col-2">
+            <input class="input-group-text fs-1" type="submit" value="Вывести">
           </div>
       </form>
 {% endblock %}
 
 {% block content %}
-        <div class = "col-10 offset-2">
-            <ul class="nav justify-content-left">
-              <li class="nav-item">
+        <div class = "col-12 fs-3">
+            <ul class="nav nav-fill">
+              <li class="nav-item col-3">
                 {% if customer_selected %}
-                    <a class="nav-link active" aria-current="page" href="/?customer={{ customer_selected.id }}">Основные данные</a>
+                    <a class="nav-link active" aria-current="page" href="/?customer={{ customer_selected.id }}">Данные</a>
                 {% else %}
-                     <a class="nav-link active" aria-current="page" href="/">Основные данные</a>
+                     <a class="nav-link active" aria-current="page" href="/">Данные</a>
                 {% endif %}
               </li>
-              <li class="nav-item">
+              <li class="nav-item col-3">
                 {% if customer_selected %}
                     <a class="nav-link" href="/doc?customer={{ customer_selected.id }}">Документы и справки</a>
                 {% else %}
                     <a class="nav-link" href="/doc">Документы и справки</a>
                 {% endif %}
               </li>
-              <li class="nav-item">
+              <li class="nav-item col-3">
                 {% if customer_selected %}
                     <a class="nav-link" href="/update?customer={{ customer_selected.id }}">Предоставить данные</a>
                 {% else %}
                     <a class="nav-link" href="/update">Предоставить данные</a>
                 {% endif %}
               </li>
-              <li class="nav-item">
+              <li class="nav-item col-3">
                 {% if customer_selected %}
                     <a class="nav-link" href="/history?customer={{ customer_selected.id }}">История</a>
                 {% else %}

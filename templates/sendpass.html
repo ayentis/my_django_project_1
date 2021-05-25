@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class = "col-6 offset-2">
+<div class = "fs-2">
 
 
     {% if PasswordSent %}
@@ -24,12 +24,17 @@
              <h2>Введите номер телефона, который был указан как финансовый при регистрации договора.
                  На этот номер будет выслан пароль в СМС сообщении</h2>
             <div class="mb-4">
+                <br>
+                <br>
               <label for="phone" class="form-label">Введите номер телефона  (10 цифр) </label>
-              <input type="tel" class="form-control" id="phone" name="username" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
+              <input type="tel" class="form-control fs-1" id="phone" name="username" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
               <div id="emailHelp" class="form-text">Мы не передаем Ваш номер телефона третьим лицам.</div>
             </div>
+
             <div class="mb-4">
-                <input type="submit" name = "Send" value="Получить" class="mt-2 btn btn-primary">
+                <br>
+                <br>
+                <input type="submit" name = "Send" value="Получить" class="fs-2 btn btn-primary">
             </div>
 
             {% if UserDoesNotExist %}

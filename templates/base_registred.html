@@ -4,12 +4,26 @@
 {% block menu %}
 
     {% if user.username %}
-        <a class="me-3 py-2 text-dark text-decoration-none" href="#">{{user.username}}</a>
-        {% if customer_selected %}
-            <a class="me-3 py-2 text-dark text-decoration-none" href="/current_profile/?customer={{ customer_selected.id }}">Профиль</a>
-        {% else %}
-            <a class="me-3 py-2 text-dark text-decoration-none" href="/current_profile">Профиль</a>
-        {% endif %}
-        <a class="py-2 text-dark text-decoration-none" href="/logout">Выйти</a>
+
+        <div class = "col-12 fs-3">
+            <ul class="nav nav-fill">
+                <li class="nav-item col-7 align-items-left">
+                     <a class="me-4 text-dark text-decoration-none" href="#">{{user.username}}</a>
+                </li>
+                <li class="nav-item col-3">
+                    {% if customer_selected %}
+                        <a class="me-4 text-dark text-decoration-none" href="/current_profile/?customer={{ customer_selected.id }}">Профиль</a>
+                    {% else %}
+                        <a class="me-4 text-dark text-decoration-none" href="/current_profile">Профиль</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item col-2">
+                    <a class="me-4 text-dark text-decoration-none" href="/logout">Выйти</a>
+                </li>
+            </ul>
+        </div>
+
     {% endif %}
+
+
 {% endblock %}

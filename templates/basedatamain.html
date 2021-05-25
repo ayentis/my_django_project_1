@@ -5,14 +5,14 @@
 {% block content1 %}
 
 {% if main_data %}
-    <div class = "col-6 offset-2">
-      <table class="table">
+<!--    <div class = "col-12 offset-2">-->
+      <table class="fs-2" class="table">
          {% for str_elem in main_data %}
             {% if forloop.first %}
               <thead>
                 <tr>
                     {% for elem in str_elem %}
-                        <th scope="col">{{ elem }}</th>
+                        <th  scope="col">{{ elem }}</th>
                     {% endfor %}
                 </tr>
               </thead>
@@ -21,9 +21,9 @@
                 <tr>
                     {% for elem in str_elem %}
                         {% if forloop.first %}
-                            <th scope="row">{{ elem }}</th>
+                            <th  scope="row">{{ elem }}</th>
                         {% else %}
-                            <td> {{ elem }}</td>
+                            <td > {{ elem }}</td>
                         {% endif %}
                     {% endfor %}
                 </tr>
@@ -33,10 +33,11 @@
       </table>
 
       {% for add_data_key, add_data_value in add_data.items %}
-        <div>
-            <b>{{ add_data_key }}</b>
+        <div class=" fs-2">
+            <br>
+            <b class=" fs-2">{{ add_data_key }}</b>
             {% for add_data_str in add_data_value %}
-                <table class="table">
+                <table class="table fs-3">
                     {% if forloop.first %}
                         <thead>
                             <tr>
@@ -64,7 +65,7 @@
         </div>
 
     {% endfor%}
-    </div>
+<!--    </div>-->
 
 {% endif %}
 {% endblock %}
