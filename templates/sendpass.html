@@ -7,17 +7,11 @@
 <div class = "fs-2">
 
 
-    {% if PasswordSent %}
-        {% if is_error %}
-            <h2>При передаче СМС возникла ошибка</h2>
-            <h2>{{ description }}</h2>
-        {% else %}
-            <h2>Пароль выслан в СМС на номер телефона {{ login }}. Не передавайте его третьим лицам</h2>
-        {% endif %}
+    {% if method == "POST" and not ErrorMessage %}
+        <h2>Пароль выслан в СМС на номер телефона {{ login }}. Не передавайте его третьим лицам</h2>
         {% if password %}
             <h2>Пароль {{ password }}</h2>
         {% endif %}
-
     {% else %}
         <form action="/send_pass/" method="post">
             {% csrf_token %}
@@ -26,7 +20,7 @@
             <div class="mb-4">
                 <br>
                 <br>
-              <label for="phone" class="form-label">Введите номер телефона  (10 цифр) </label>
+              <label for="phone" class="form-label">Номер телефона  (10 цифр) </label>
               <input type="tel" class="form-control fs-1" id="phone" name="username" pattern="[0-9]{10}" placeholder="ХХХХХХХХХХ">
               <div id="emailHelp" class="form-text">Мы не передаем Ваш номер телефона третьим лицам.</div>
             </div>
@@ -37,8 +31,8 @@
                 <input type="submit" name = "Send" value="Получить" class="fs-2 btn btn-primary">
             </div>
 
-            {% if UserDoesNotExist %}
-                <h2>Логин {{ login }} не существует </h2>
+            {% if ErrorMessage %}
+                <h2>{{ ErrorMessage }} {{ login }} </h2>
             {% endif %}
 
         </form>

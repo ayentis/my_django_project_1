@@ -1,15 +1,15 @@
 # Create your views here.
 
-from django.http import HttpResponse
+
 from django.contrib.auth.decorators import login_required
-
 from django.shortcuts import render, redirect
-from numpy.linalg import cond
-
 from .models import User, Customer, LocalSettings, UpdateHistory, RequestHistory
 from .forms import AddUserIndo
 import requests
 from django.utils import timezone
+import logging
+
+logger = logging.getLogger("Users")
 
 def registration(request):
 
@@ -29,6 +29,7 @@ def numeric_password_generator(pass_len):
 
 def send_SMS_letsads(phone_number, text):
     import xmltodict
+    result = {}
     send_sms_data = '<?xml version="1.0" encoding="UTF-8"?>' \
                     '<request>' \
                     '<auth>' \
@@ -41,55 +42,63 @@ def send_SMS_letsads(phone_number, text):
                     '     <recipient>{}</recipient>' \
                     '     </message>' \
                     '</request>'
+    try:
+        answer = requests.post("https://letsads.com/api", data=send_sms_data.format(text, '38' + phone_number))
+        result = xmltodict.parse(answer.text).get('response')
+    except requests.exceptions.RequestException as e:
+        result['name'] = 'Error'
+        result['description'] = e
 
-    answer = requests.post("https://letsads.com/api", data=send_sms_data.format(text, '38' + phone_number))
-
-    return xmltodict.parse(answer.text).get('response')
+    return result
 
 
 def send_SMS(phone_number, text, last_SMS_datetime):
     import datetime
-    result = {'is_error': False,
-              'description': ''}
+    result = {'ErrorMessage': ''}
 
     required_min_diff = 3600  # 1 hour
 
     if int((timezone.now() - last_SMS_datetime).total_seconds())< required_min_diff:
-        result['description'] = 'SMS has been sent to you within 24 hours'
-        result['is_error'] = True
+        result['ErrorMessage'] = 'В течении часа СМС уже отрправлялась'
     else:
         sms_sender_result = send_SMS_letsads(phone_number, text)
 
         if sms_sender_result.get('name') == 'Error':
-            result['description'] = sms_sender_result.get('description')
-            result['is_error'] = True
+            result['ErrorMessage'] = "Свяжитесь с Вашим менеджером для решения вопроса"
+            err_res = sms_sender_result.get('description')
+
+            logger.error(f'SMS ERROR {err_res} {phone_number}')
 
     return result
 
 
 def send_pass(request):
 
-    content = {"UserDoesNotExist": False,
-               'PasswordSent': False,
+    content = {
+               'ErrorMessage': '',
+               'method': request.method,
                }
 
     if request.method == 'POST':
         content['login'] = request.POST['username']
-        customers_data = get_data_from_1c(content['login'], 'LoginValid')
-        if (customers_data):
+        result = get_data_from_1c(content['login'], 'LoginValid')
+        customers_data = result['JSON']
+
+        if result['errors']:
+            content["ErrorMessage"] = "Неудачная попытка, попробуйте позже "
+        elif (customers_data):
             import datetime
 
             obj, created = User.objects.update_or_create(username=content['login'])
 
             password = numeric_password_generator(6)
-            rez_sms_sender = send_SMS(content['login'], f'Personal landowner access {password}', obj.last_SMS_datetime)
+            rez_sms_sender = send_SMS(content['login'], f'Password  {password}', obj.last_SMS_datetime)
             content.update(rez_sms_sender)
-            content["PasswordSent"] = True
 
             # for test
             content['password'] = password
 
-            if not content['is_error']:
+            if not content['ErrorMessage']:
                 obj.last_SMS_datetime = timezone.now()
 
             obj.set_password(password)
@@ -98,7 +107,7 @@ def send_pass(request):
 
             obj.save()
         else:
-            content["UserDoesNotExist"] = True
+            content["ErrorMessage"] = "Пользователь не зарегистрирован в базе данных"
 
     return render(request, "sendpass.html", content)
 
@@ -111,6 +120,7 @@ def get_data_from_1c(phone, ProcedureName = ''):
     if (ProcedureName == ''):
         ProcedureName = record_type[0].value
 
+    answer = {'JSON': [], 'errors': False}
     if (record_type):
         body_dict = {
             "method": "ExecuteExternalProcessing",
@@ -119,18 +129,34 @@ def get_data_from_1c(phone, ProcedureName = ''):
             "PhoneNumber": phone
         }
 
-        response = requests.post('http://1cweb.fusion.mk.ua/fusion/hs/PutData'
+        try:
+            response = requests.post('http://1cweb.fusion.mk.ua/fusion/hs/PutData'
                                  , json=body_dict
                                  , auth=('exchangetlc', 'passexchange')
                                  , headers={'Content-type': 'application/json'}
-        )
-        return response.json()
 
+            )
+            answer['JSON'] = response.json()
+        except requests.exceptions.HTTPError as errh:
+            answer['errors'] = True
+            logger.error(f'SMS ERROR: Http Error: " {errh} {phone}')
+        except requests.exceptions.ConnectionError as errc:
+            answer['errors'] = True
+            logger.error(f'SMS ERROR: Error Connecting: " {errc} {phone}')
+        except requests.exceptions.Timeout as errt:
+            answer['errors'] = True
+            logger.error(f'SMS ERROR: Timeout Error: " {errt} {phone}')
+        except requests.exceptions.RequestException as err:
+            answer['errors'] = True
+            logger.error(f'SMS ERROR: Undefined Error: " {err} {phone}')
+
+    return answer
 
 def update_database_by_phone(phone_number):
 
     obj, created = User.create_by_phone(phone_number)
-    customers_data = get_data_from_1c(phone_number)
+    result = get_data_from_1c(phone_number)
+    customers_data = result['JSON']
 
     for current_customer in customers_data:
         params = {
@@ -141,16 +167,21 @@ def update_database_by_phone(phone_number):
         if Customer.exist_by_id(current_customer['ID']):
             Customer.update_by_id(current_customer['ID'], params)
         else:
-            params['customer_name, id, user'] = current_customer['Name'], current_customer['ID'], obj
-            Customer.create(params)
+            params['customer_name'] = current_customer['Name']
+            params['id'] = current_customer['ID']
+            params['user'] = obj
 
+            Customer.create(params)
+    return result['errors']
 
 def set_content(request):
     users_customers = request.user.customers.all()
     content = {
         'customers_list': users_customers,
     }
-    if customer_id := request.GET.get('customer'):
+    if len(users_customers) == 1:
+        content['customer_selected'] = users_customers[0]
+    elif customer_id := request.GET.get('customer'):
         content['customer_selected'] = users_customers.get(id=customer_id)
     return content
 
@@ -167,11 +198,12 @@ def maindata(request):
     # update_database_by_phone(request.user.username)
 
     content = set_content(request)
-    content['main_data, add_data'] = [],{}
+    content['main_data, add_data'] = [], {}
 
-    if customer_id := request.GET.get('customer'):
-        content['main_data'] = request.user.customers.get(id=customer_id).main_data
-        content['add_data'] = request.user.customers.get(id=customer_id).add_data
+   # if customer_id := request.GET.get('customer'):
+    if customer := content.get('customer_selected'):
+        content['main_data'] = request.user.customers.get(id=customer.id).main_data
+        content['add_data'] = request.user.customers.get(id=customer.id).add_data
     return render(request, "basedatamain.html", content)
 
 
@@ -196,10 +228,12 @@ def historydata(request):
     return render(request, "basedatahistory.html", set_content(request))
 
 
+@login_required
 def enter(request):
     return render(request, "basedatamain.html", {})
 
 
+@login_required
 def update_profile(request):
 
     content = set_content(request)
