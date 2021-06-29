@@ -135,6 +135,7 @@ def get_data_from_1c(phone, ProcedureName = ''):
                                  , auth=('exchangetlc', 'passexchange')
                                  , headers={'Content-type': 'application/json'}
 
+
             )
             answer['JSON'] = response.json()
         except requests.exceptions.HTTPError as errh:
